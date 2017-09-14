@@ -2,7 +2,7 @@
 """
 YOUR HEADER COMMENT HERE
 
-@author: YOUR NAME HERE
+@author: JOHN WEN
 
 """
 
@@ -21,6 +21,19 @@ def shuffle_string(s):
 
 
 def get_complement(nucleotide):
+    if nucleotide == 'A':
+        return 'T'
+    elif nucleotide == 'T':
+        return 'A'
+    elif nucleotide == 'C':
+        return 'G'
+    elif nucleotide == 'G':
+        return 'C'
+    else:
+        return 'This is not a nucleotide'
+    """ Checks for each letter and returns the complement
+        (might not be the most effiicent way) and returns
+        'This is not a nucleotide' if any other letters are implented"""
     """ Returns the complementary nucleotide
 
         nucleotide: a nucleotide (A, C, G, or T) represented as a string
@@ -35,6 +48,20 @@ def get_complement(nucleotide):
 
 
 def get_reverse_complement(dna):
+    reverse_dna = ''
+     """ base string to add complements"""
+    index = 0
+     """ counter for while loop"""
+    while index < len(dna):
+        reverse_dna = reverse_dna + get_complement(dna[index])
+        index = index + 1
+    """ while loop that processes each letter of the string and applies the
+        previous function get_complement() to add on to the newly made string
+        reverse_dna"""
+    return reverse_dna
+
+
+
     """ Computes the reverse complementary sequence of DNA for the specfied DNA
         sequence
 
@@ -48,12 +75,34 @@ def get_reverse_complement(dna):
     # TODO: implement this
     pass
 
-
+#This one code took me an hour to write. jesus.
 def rest_of_ORF(dna):
-    """ Takes a DNA sequence that is assumed to begin with a start
-        codon and returns the sequence up to but not including the
-        first in frame stop codon.  If there is no in frame stop codon,
+  index = 0
+  newstr = ''
+  stop_codon = ['TAG','TAA','TGA']
+  """index is set as the counter, newstr is what the output is set to be, and
+     the stop_codon variable is just for me to check for stop codons"""
+  if ('TAG' not in dna) and ('TAA' not in dna) and ('TGA' not in dna):
+    return dna
+  else:
+    while index < len(dna):
+      if (dna[index:index+3] not in stop_codon):
+        newstr = newstr + dna[index:index+3]
+        index = index + 3
+      else:
+        return newstr
+    return newstr
+
+    """The rest of the function checks every three codons and tries to match them
+    to the stop codon. If it isn't a stop codon then it will add the letter to the string"""
+
+        """ Takes a DNA sequence that is assumed to begin with a start
+            codon and returns the sequence up to but not including the
+            first in frame stop codon.  If there is no in frame stop codon,
         returns the whole string.
+
+        TAG TAA and TGA
+
 
         dna: a DNA sequence
         returns: the open reading frame represented as a string
@@ -66,7 +115,36 @@ def rest_of_ORF(dna):
     pass
 
 
+""" V1
 def find_all_ORFs_oneframe(dna):
+  newstr1 = []
+  newstr1.append(rest_of_ORF(dna))
+  stop_codon = ['TAG','TAA','TGA']
+  index = 0
+  #newstr1 adds the first chunk to the list
+  while dna[index:index+3] not in stop_codon:
+    index = index + 3
+  newstr1.append(dna[index+3:])
+  #checks to find
+  return newstr1
+"""
+
+#V2 all_ORFS_oneframe
+def find_all_ORFs_oneframe(dna):
+  newstr1 = []
+  newstr1.append(rest_of_ORF(dna))
+  stop_codon = ['TAG','TAA','TGA']
+  index = 0
+  #newstr1 adds the first chunk to the list
+  while dna[index:index+3] not in stop_codon and (index < len(dna)-3):
+      index = index + 3
+  newstr1.append(dna[index+3:])
+  return newstr1
+
+#print(find_all_ORFs_oneframe("ATGCATGAATGTAGATAGATGTGCCC"))
+#print(find_all_ORFs_oneframe('AAAAAAAATAGAAA'))
+#print(find_all_ORFs_oneframe('AAAATTTTTTAATTTTTTATTATA'))
+
     """ Finds all non-nested open reading frames in the given DNA
         sequence and returns them as a list.  This function should
         only find ORFs that are in the default frame of the sequence
@@ -83,7 +161,34 @@ def find_all_ORFs_oneframe(dna):
     pass
 
 
+#this code doesn't work yet. Still going through testing.
+def cutlist(dna):
+  list = dna
+  index = 1
+  while 'ATG' != dna[index:index + 3]:
+    index = index + 1
+  list = dna[index:]
+  return list
+
+print (cutlist("ATGCATGAATGTAG"))
+
+
 def find_all_ORFs(dna):
+  finallist = []
+  list = dna
+  while 'ATG' in list:
+    if 'ATG' == list[0:3]:
+      finallist.append(list)
+      list = cutlist(list)
+    else:
+      list = cutlist(list)
+  return finallist
+
+
+print(find_all_ORFs("ATGCATGAATGTAG"))
+
+print(find_all_ORFs("ATGCATGAATGTAG"))
+
     """ Finds all non-nested open reading frames in the given DNA sequence in
         all 3 possible frames and returns them as a list.  By non-nested we
         mean that if an ORF occurs entirely within another ORF and they are
@@ -92,7 +197,6 @@ def find_all_ORFs(dna):
 
         dna: a DNA sequence
         returns: a list of non-nested ORFs
-
     >>> find_all_ORFs("ATGCATGAATGTAG")
     ['ATGCATGAATGTAG', 'ATGAATGTAG', 'ATG']
     """
