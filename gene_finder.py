@@ -11,6 +11,7 @@ from amino_acids import aa, codons, aa_table   # you may find these useful
 from load import load_seq
 dna = load_seq("./data/X73525.fa")
 import doctest
+from pickle import dump, load
 
 
 def shuffle_string(s):
@@ -138,7 +139,7 @@ def find_all_ORFs_oneframe(dna):
     """
     all_ORFs = []
     stopped = True
-    stop_codons = stop_codons = ['TAA', 'TAG', 'TGA']
+    stop_codons = ['TAA', 'TAG', 'TGA']
 
     for i in range(0, len(dna)-2, 3):
         if dna[i:i+3] == 'ATG' and stopped:
@@ -286,9 +287,17 @@ def gene_finder(dna):
 
     return amino_acids
 
-print(gene_finder(dna))
+genes = gene_finder(dna)
+
+#write to genes.txt file
+file_ = open('genes.txt', 'wb')
+dump(genes, file_)
+
+#read from genes.txt file
+file_ = open('genes.txt', 'rb+')
+print(load(file_))
 
 
-#if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
