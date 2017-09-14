@@ -105,10 +105,10 @@ def rest_of_ORF(dna):
     >>> rest_of_ORF("ATGAGAGA")
     'ATGAGAGA'
     """
-    #start codon: ATG
-    #stop codons: TAA, TAG, TGA
+    stop_codons = ['TAA', 'TAG', 'TGA']
+
     for i in range(3, len(dna)-2, 3):
-        if dna[i:i+3] == 'TAA' or dna[i:i+3] == 'TAG' or dna[i:i+3] == 'TGA':
+        if dna[i:i+3] in stop_codons:
             return dna[:i]
 
     return dna
@@ -138,12 +138,13 @@ def find_all_ORFs_oneframe(dna):
     """
     all_ORFs = []
     stopped = True
+    stop_codons = stop_codons = ['TAA', 'TAG', 'TGA']
 
     for i in range(0, len(dna)-2, 3):
         if dna[i:i+3] == 'ATG' and stopped:
             all_ORFs.append(rest_of_ORF(dna[i:]))
             stopped = False
-        elif dna[i:i+3] == 'TAA' or dna[i:i+3] == 'TAG' or dna[i:i+3] == 'TGA':
+        elif dna[i:i+3] in stop_codons:
             stopped = True
 
     return all_ORFs
