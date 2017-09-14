@@ -54,6 +54,7 @@ def get_reverse_complement(dna):
     reverse = ''
     i = 0
     length = len(dna)
+
     while i < length:
         letter = dna[length - 1 -i] #moves backwards along the string
         pair = get_complement(letter) #finds complement
@@ -79,23 +80,18 @@ def rest_of_ORF(dna):
     stop_codons = ['TAG', 'TGA', 'TAA']
     codons = []
     n = 3
-    return_string = ''
+
     for i in range(0, len(dna), n):
         codons.append(dna[i:i+n])
 
-        #clean this up: why did i get index errors?
-        #redo: ''.join instead of for loops
-        #try/except clauses?
     for c in range(0, len(codons)):
         for s in range(0, len(stop_codons)):
             if codons[c] == stop_codons[s]:
                 codons = codons[:c]
-                for a in codons:
-                    return_string = return_string+a
+                return_string = ''.join(codons)
                 return return_string
 
-    for a in codons:
-        return_string = return_string+a
+    return_string = ''.join(codons)
     return return_string
 
 def find_all_ORFs_oneframe(dna):
@@ -124,8 +120,8 @@ def find_all_ORFs_oneframe(dna):
         if codons[c] == start_codon:
                 dna_sequence = rest_of_ORF(''.join(codons[c:]))
                 ORFS.append(dna_sequence)
-                c = c + len(dna_sequence)
-        c = c+1
+                c = c + len(dna_sequence) #skips over the rest of the sequence
+        c = c+1 #if I'm missing a permutation, this might be a problem.
 
     return ORFS
 
@@ -150,9 +146,8 @@ def find_all_ORFs(dna):
         orfs = find_all_ORFs_oneframe(dna[i:])
         for o in orfs:
             result = ''.join(o)
-            if result != '':
+            if result != '': #if there are no permutations in a run through
                 return_list.append(result)
-
     return return_list
 
 def find_all_ORFs_both_strands(dna):
@@ -221,5 +216,5 @@ def gene_finder(dna):
 
 if __name__ == "__main__":
     import doctest
-    doctest.run_docstring_examples(find_all_ORFs_both_strands, globals(), verbose=True)
+    doctest.run_docstring_examples(rest_of_ORF, globals(), verbose=True)
     #print(find_all_ORFs_oneframe('ATGCATGAATGTAGATAGATGTGCCC'))
