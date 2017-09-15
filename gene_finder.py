@@ -131,23 +131,20 @@ def find_all_ORFs_oneframe(dna):
     >>> find_all_ORFs_oneframe("TTTATGCCCTAGATAATGTTTTAGATGCCCTAG")
     ['ATGCCC', 'ATGTTT', 'ATGCCC']
     >>> find_all_ORFs_oneframe("ATGCGAATGTAGCATCAAA")
-    ['ATGCGAATGTAG']
+    ['ATGCGAATG']
     """
     #print(find_all_ORFs_oneframe("ATGCATGAATGTAGATAGATGTGCCC"))
     #print(find_all_ORFs_oneframe('AAAAAAAATAGAAA'))
     #print(find_all_ORFs_oneframe('AAAATTTTTTAATTTTTTATTATA'))
     finallistofORFS = []
-    stop_codon = ['TAG','TAA','TGA']
     index = 0
     #newstr1 adds the first chunk to the list
     while index < len(dna):
         if dna[index:index+3] == 'ATG':
-            index2 = index
-            while index2 < len(dna):
-                if dna[index2:index2+3] in stop_codon or index2 > len(dna) - 1:
-                    finallistofORFS.append(dna[index:index2])
-                index2 = index2 + 3
-        index = index + 3
+            finallistofORFS.append(rest_of_ORF(dna[index:]))
+            index = index + len(rest_of_ORF(dna[index:]))
+        else:
+            index = index + 3
     return finallistofORFS
 
 
@@ -185,8 +182,7 @@ def find_all_ORFs_both_strands(dna):
         returns: a list of non-nested ORFs
     >>> find_all_ORFs_both_strands("ATGCGAATGTAGCATCAAA")
     ['ATGCGAATG', 'ATGCTACATTCGCAT']
-    'TTTGATGCTACATTCGCAT'
-
+    
     """
     finallistofORFs = []
     finallistofORFs.extend(find_all_ORFs(dna))
