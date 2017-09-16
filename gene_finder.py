@@ -29,7 +29,25 @@ def get_complement(nucleotide):
     'T'
     >>> get_complement('C')
     'G'
+    >>> get_complement('G')
+    'C'
+    >>> get_complement('T')
+    'A'
+
     """
+    complement_strand = ""
+    for pair in nucleotide:
+        if pair == 'A':
+            complement_strand = complement_strand + 'T'
+        if pair == 'C':
+            complement_strand = complement_strand + 'G'
+        if pair == 'T':
+            complement_strand = complement_strand + 'A'
+        if pair == 'G':
+            complement_strand = complement_strand + 'C'
+    #print (complement_strand)
+    return(complement_strand)
+
     # TODO: implement this
     pass
 
@@ -45,11 +63,18 @@ def get_reverse_complement(dna):
     >>> get_reverse_complement("CCGCGTTCA")
     'TGAACGCGG'
     """
+    rev_complement =""
+    complement = get_complement(dna)
+    strand_length = len(complement)
+    while (strand_length > 0):
+        rev_complement = rev_complement +  complement[strand_length-1]
+        strand_length -= 1
+    return (rev_complement)
     # TODO: implement this
     pass
 
 
-def rest_of_ORF(dna):
+def rest_of_ORF(dna): # need to get this checked
     """ Takes a DNA sequence that is assumed to begin with a start
         codon and returns the sequence up to but not including the
         first in frame stop codon.  If there is no in frame stop codon,
@@ -61,8 +86,25 @@ def rest_of_ORF(dna):
     'ATG'
     >>> rest_of_ORF("ATGAGATAGG")
     'ATGAGA'
+
+    >>> rest_of_ORF("TAG")
+    ''
+
     """
+    #stop codons are TAA, TAG, TGA
     # TODO: implement this
+    #stop_codons = ['TAA','TAG','TGA']
+    stop_codons = ['TAA','TAG','TGA']
+
+    for i in range (0, len(dna)-1,3):
+
+        if ( len(dna) - i >=3):
+            if dna[i:i+3] in stop_codons:
+
+                return dna[0:i]
+
+
+    return dna
     pass
 
 
@@ -78,10 +120,33 @@ def find_all_ORFs_oneframe(dna):
         returns: a list of non-nested ORFs
     >>> find_all_ORFs_oneframe("ATGCATGAATGTAGATAGATGTGCCC")
     ['ATGCATGAATGTAGA', 'ATGTGCCC']
-    """
-    # TODO: implement this
-    pass
+    >>> find_all_ORFs_oneframe("TGCGAATGTAGCATCAAA")
+    >>>
+    >>> find_all_ORFs_oneframe("GCGAATGTAGCATCAAA")
+    >>>
+    >>> find_all_ORFs_oneframe("ATGCGAATGTAGCATCAAA")
+    ['ATGCGAATG']
 
+
+    """
+    all_pairs = len(dna)
+    total_checked = 0
+    orfs = []
+    overflow_check = 0
+    i =0 #The number of pairs that have been checked
+    check_complete = False
+    over_run_check = 0
+    while i <= all_pairs:
+        stran = ""
+        if dna[i:i+3] == "ATG":
+            stran = "ATG"
+            #print (dna[i:])
+            i = i + 3
+            stran = stran +  rest_of_ORF(dna[i:])
+            orfs.append(stran)
+            i = i + 3
+        i = i + 3
+    return orfs
 
 def find_all_ORFs(dna):
     """ Finds all non-nested open reading frames in the given DNA sequence in
@@ -95,7 +160,15 @@ def find_all_ORFs(dna):
 
     >>> find_all_ORFs("ATGCATGAATGTAG")
     ['ATGCATGAATGTAG', 'ATGAATGTAG', 'ATG']
+    >>> find_all_ORFs_both_strands("ATGCGAATGTAGCATCAAA")
+    ['ATGCGAATG']
     """
+    orf = []
+    stran1 = find_all_ORFs_oneframe(dna)
+    orf = (stran1)
+    orf = orf + (find_all_ORFs_oneframe(dna[1:]))
+    orf = orf +(find_all_ORFs_oneframe(dna[2:]))
+    return orf
     # TODO: implement this
     pass
 
@@ -109,6 +182,11 @@ def find_all_ORFs_both_strands(dna):
     >>> find_all_ORFs_both_strands("ATGCGAATGTAGCATCAAA")
     ['ATGCGAATG', 'ATGCTACATTCGCAT']
     """
+
+    orf = []
+    orf = orf +  find_all_ORFs(dna)
+    orf = orf + find_all_ORFs(get_reverse_complement(dna))
+    return orf
     # TODO: implement this
     pass
 
@@ -163,4 +241,4 @@ def gene_finder(dna):
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
+    doctest.run_docstring_examples(find_all_ORFs_both_strands, globals(), verbose = True)
