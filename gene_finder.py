@@ -2,13 +2,21 @@
 """
 YOUR HEADER COMMENT HERE
 
-@author: YOUR NAME HERE
+@author: Aditya Kaushika
 
 """
 
 import random
 from amino_acids import aa, codons, aa_table   # you may find these useful
 from load import load_seq
+
+def count_v1(dna, base):
+    dna = list(dna)  # convert string to list of letters
+    i = 0            # counter
+    for c in dna:
+        if c == base:
+            i += 1
+    return i
 
 
 def shuffle_string(s):
@@ -19,20 +27,23 @@ def shuffle_string(s):
 
 # YOU WILL START YOUR IMPLEMENTATION FROM HERE DOWN ###
 
-
 def get_complement(nucleotide):
-    """ Returns the complementary nucleotide
-
-        nucleotide: a nucleotide (A, C, G, or T) represented as a string
+    """ Returns the complementary nucleotide nucleotide: a nucleotide (A, C, G, or T) represented as a string
         returns: the complementary nucleotide
     >>> get_complement('A')
     'T'
     >>> get_complement('C')
     'G'
     """
-    # TODO: implement this
-    pass
-
+    for letter in nucleotide:
+        if letter == 'A':
+            return 'T'
+        elif letter == 'T':
+            return 'A'
+        elif letter == 'G':
+            return 'C'
+        else:
+            return 'G'
 
 def get_reverse_complement(dna):
     """ Computes the reverse complementary sequence of DNA for the specfied DNA
@@ -45,8 +56,12 @@ def get_reverse_complement(dna):
     >>> get_reverse_complement("CCGCGTTCA")
     'TGAACGCGG'
     """
-    # TODO: implement this
-    pass
+    Dna_reversed = dna[::-1]
+    d=''
+    for letter in Dna_reversed:
+        reverse = get_complement(letter)
+        d+= reverse
+    return d
 
 
 def rest_of_ORF(dna):
@@ -54,7 +69,6 @@ def rest_of_ORF(dna):
         codon and returns the sequence up to but not including the
         first in frame stop codon.  If there is no in frame stop codon,
         returns the whole string.
-
         dna: a DNA sequence
         returns: the open reading frame represented as a string
     >>> rest_of_ORF("ATGTGAA")
@@ -62,8 +76,13 @@ def rest_of_ORF(dna):
     >>> rest_of_ORF("ATGAGATAGG")
     'ATGAGA'
     """
-    # TODO: implement this
-    pass
+
+    for i in range(0,len(dna),3):
+            if (dna[i:i+3]== "TAA") or (dna[i:i+3]== "TAG") or (dna[i:i+3]== "TGA") :
+                a =i+3
+                break
+            else:
+                return dna
 
 
 def find_all_ORFs_oneframe(dna):
@@ -79,8 +98,9 @@ def find_all_ORFs_oneframe(dna):
     >>> find_all_ORFs_oneframe("ATGCATGAATGTAGATAGATGTGCCC")
     ['ATGCATGAATGTAGA', 'ATGTGCCC']
     """
-    # TODO: implement this
-    pass
+    for i in range(0,len(dna),3):
+        if 'ATG' in dna:
+            return dna[:'TAA,TAG,TGA']
 
 
 def find_all_ORFs(dna):
@@ -96,22 +116,32 @@ def find_all_ORFs(dna):
     >>> find_all_ORFs("ATGCATGAATGTAG")
     ['ATGCATGAATGTAG', 'ATGAATGTAG', 'ATG']
     """
-    # TODO: implement this
-    pass
+    for i in range(0,len(dna),3):
+        find('ATG') in dna
+        return dna
+        if (dna[i:i+3]== "TAA" and i%3==0) or (dna[i:i+3]== "TAG" and i%3==0) or (dna[i:i+3]== "TGA" and i%3==0) :
+            a =i+3
+            break
+        else:
+            a = dna
 
 
 def find_all_ORFs_both_strands(dna):
     """ Finds all non-nested open reading frames in the given DNA sequence on both
         strands.
-
         dna: a DNA sequence
         returns: a list of non-nested ORFs
     >>> find_all_ORFs_both_strands("ATGCGAATGTAGCATCAAA")
     ['ATGCGAATG', 'ATGCTACATTCGCAT']
     """
-    # TODO: implement this
-    pass
-
+    for i in range(0,len(dna),3):
+        if 'ATG' in dna:
+            return dna
+        if (dna[i:i+3]== "TAA" and i%3==0) or (dna[i:i+3]== "TAG" and i%3==0) or (dna[i:i+3]== "TGA" and i%3==0) :
+            a =i+3
+            break
+        else:
+            return none
 
 def longest_ORF(dna):
     """ Finds the longest ORF on both strands of the specified DNA and returns it
@@ -163,4 +193,5 @@ def gene_finder(dna):
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
+    doctest.testmod(verbose=True)
+    # doctest.
