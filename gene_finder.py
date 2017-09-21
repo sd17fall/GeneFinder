@@ -121,7 +121,8 @@ def find_all_ORFs_oneframe(dna):
         returns: a list of non-nested ORFs
     >>> find_all_ORFs_oneframe("ATGCATGAATGTAGATAGATGTGCCC")
     ['ATGCATGAATGTAGA', 'ATGTGCCC']
-
+    >>> find_all_ORFs_oneframe("ATGATGCATGAATGTAGATAGATGTGCCC")
+    ['ATGATGCATGAATGTAGA', 'ATGTGCCC']
     """
     all_pairs = len(dna)
     total_checked = 0
@@ -231,17 +232,28 @@ def coding_strand_to_AA(dna):
         'MR'
         >>> coding_strand_to_AA("ATGCCCGCTTT")
         'MPA'
+
+
+
+
     """
+    # >>> coding_strand_to_AA("ATGCGAATGTAGCATCAAA")
+    # 'MPA'
 
     ans = ''
-    for codon in codons:
-        for c in codon:
-            for i in range(0,len(dna),3):
-
-                if dna[i:i+3] == c:
-                    ans = ans + aa[codons.index(codon)]
-
-
+    # for codon in codons:
+    #     for c in codon:
+    #         for i in range(0,len(dna),3):
+    #
+    #             if dna[i:i+3] == c:
+    #                 ans = ans + aa[codons.index(codon)]
+    #
+    #
+    # return ans
+    for i in range(0,len(dna),3):
+        if len(dna[i:i+3]) < 3:
+            continue
+        ans = ans + aa_table[dna[i:i+3]]
     return ans
     # TODO: implement this
     pass
@@ -266,7 +278,7 @@ def gene_finder(dna):
     for c in found_dna:
         found_acids.append(coding_strand_to_AA(c))
     for c in found_acids:
-        if len(c) >= threshold:
+        if len(c) >= threshold/3:
             long_acids.append(c)
     print("threshold: " + str(threshold))
     print ("Found Acids: ")
@@ -277,5 +289,5 @@ def gene_finder(dna):
 if __name__ == "__main__":
     import doctest
     # print(len(dna))
-    doctest.testmod(verbose=True)
+    
     gene_finder(dna)
