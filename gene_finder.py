@@ -139,7 +139,6 @@ def longest_ORF(dna):
     >>> longest_ORF("ATGCGAATGTAGCATCAAA")
     'ATGCTACATTCGCAT'
     """
-    longest_ORF_string = ''
     longest_ORF_string = max(find_all_ORFs_both_strands(dna))
 
     return longest_ORF_string
@@ -153,7 +152,7 @@ def longest_ORF_noncoding(dna, num_trials):
         num_trials: the number of random shuffles
         returns: the maximum length longest ORF """
     longest_ORF_overnumtrials = []
-    for i in range(num_trials):
+    for _ in range(num_trials):
         shuffle_DNA = shuffle_string(dna)
         longest_ORF_overnumtrials.append(len(longest_ORF(shuffle_DNA)))
     max_of_longest_orf = max(longest_ORF_overnumtrials)
