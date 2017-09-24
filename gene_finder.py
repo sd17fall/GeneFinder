@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-YOUR HEADER COMMENT HERE
+First project for Olin Software Design Fall 2017
 
-@author: YOUR NAME HERE
+@author: Emma Westerhoff
 
 """
 
 import random
 from amino_acids import aa, codons, aa_table   # you may find these useful
 from load import load_seq
-
 
 def shuffle_string(s):
     """Shuffles the characters in the input string
@@ -30,9 +29,15 @@ def get_complement(nucleotide):
     >>> get_complement('C')
     'G'
     """
-    # TODO: implement this
-    pass
-
+    nucleotide_inputs = ['A', 'T', 'C', 'G']
+    nucleotide_complements = ['T', 'A', 'G', 'C']
+    i = 0
+    complement = 'x' #lets the user know the complement was incorrectly computed
+    while i < len(nucleotide_inputs):
+        if nucleotide_inputs[i] == nucleotide:
+            complement = nucleotide_complements[i]
+        i += 1
+    return complement
 
 def get_reverse_complement(dna):
     """ Computes the reverse complementary sequence of DNA for the specfied DNA
@@ -45,9 +50,16 @@ def get_reverse_complement(dna):
     >>> get_reverse_complement("CCGCGTTCA")
     'TGAACGCGG'
     """
-    # TODO: implement this
-    pass
+    reverse = ''
+    i = 0
+    length = len(dna)
 
+    while i < length:
+        letter = dna[length - 1 -i] #moves backwards along the string
+        pair = get_complement(letter) #finds complement
+        reverse = reverse + pair
+        i += 1
+    return reverse
 
 def rest_of_ORF(dna):
     """ Takes a DNA sequence that is assumed to begin with a start
@@ -61,10 +73,25 @@ def rest_of_ORF(dna):
     'ATG'
     >>> rest_of_ORF("ATGAGATAGG")
     'ATGAGA'
+    >>> rest_of_ORF("ATTTCGGGT")
+    'ATTTCGGGT'
     """
-    # TODO: implement this
-    pass
+    stop_codons = ['TAG', 'TGA', 'TAA']
+    codons = []
+    n = 3
 
+    for i in range(0, len(dna), n):
+        codons.append(dna[i:i+n])
+
+    for c in range(0, len(codons)):
+        for s in range(0, len(stop_codons)):
+            if codons[c] == stop_codons[s]:
+                codons = codons[:c]
+                return_string = ''.join(codons)
+                return return_string
+
+    return_string = ''.join(codons)
+    return return_string
 
 def find_all_ORFs_oneframe(dna):
     """ Finds all non-nested open reading frames in the given DNA
@@ -79,8 +106,23 @@ def find_all_ORFs_oneframe(dna):
     >>> find_all_ORFs_oneframe("ATGCATGAATGTAGATAGATGTGCCC")
     ['ATGCATGAATGTAGA', 'ATGTGCCC']
     """
-    # TODO: implement this
-    pass
+    start_codon = 'ATG'
+    codons = []
+    n = 3
+    ORFS = []
+    c = 0
+
+    for i in range(0, len(dna), n):
+        codons.append(dna[i:i+n])
+
+    while c in range(0, len(codons)):
+        if codons[c] == start_codon:
+                dna_sequence = rest_of_ORF(''.join(codons[c:]))
+                ORFS.append(dna_sequence)
+                c += len(dna_sequence) #skips over the rest of the sequence
+        c += 1 #if I'm missing a permutation, this might be a problem.
+
+    return ORFS
 
 
 def find_all_ORFs(dna):
@@ -96,9 +138,16 @@ def find_all_ORFs(dna):
     >>> find_all_ORFs("ATGCATGAATGTAG")
     ['ATGCATGAATGTAG', 'ATGAATGTAG', 'ATG']
     """
-    # TODO: implement this
-    pass
+    return_list = []
 
+    for i in range (0,3):
+        #cases are coming through that occur in the same frame
+        orfs = find_all_ORFs_oneframe(dna[i:])
+        for o in orfs:
+            result = ''.join(o)
+            if result != '': #if there are no permutations in a run through
+                return_list.append(result)
+    return return_list
 
 def find_all_ORFs_both_strands(dna):
     """ Finds all non-nested open reading frames in the given DNA sequence on both
@@ -109,9 +158,18 @@ def find_all_ORFs_both_strands(dna):
     >>> find_all_ORFs_both_strands("ATGCGAATGTAGCATCAAA")
     ['ATGCGAATG', 'ATGCTACATTCGCAT']
     """
-    # TODO: implement this
-    pass
+    return_list = []
 
+    all_orfs_one = find_all_ORFs(dna)
+    all_orfs_two = find_all_ORFs(get_reverse_complement(dna))
+
+    for o in all_orfs_one:
+        return_list.append(o)
+
+    for a in all_orfs_two:
+        return_list.append(a)
+    #print(return_list)
+    return return_list
 
 def longest_ORF(dna):
     """ Finds the longest ORF on both strands of the specified DNA and returns it
@@ -119,9 +177,18 @@ def longest_ORF(dna):
     >>> longest_ORF("ATGCGAATGTAGCATCAAA")
     'ATGCTACATTCGCAT'
     """
-    # TODO: implement this
-    pass
+    orfs = find_all_ORFs_both_strands(dna)
 
+    #longest_size=len(max(orfs,key=len))
+
+    longest_length = 0
+
+    for o in orfs:
+        if len(o) > longest_length:
+            longest_seq = o
+            longest_length = len(o)
+
+    return longest_seq
 
 def longest_ORF_noncoding(dna, num_trials):
     """ Computes the maximum length of the longest ORF over num_trials shuffles
@@ -130,8 +197,17 @@ def longest_ORF_noncoding(dna, num_trials):
         dna: a DNA sequence
         num_trials: the number of random shuffles
         returns: the maximum length longest ORF """
-    # TODO: implement this
-    pass
+    lengths = []
+    max_length = 0
+    for rand in range(0, num_trials):
+        new_sequence = shuffle_string(dna)
+        leng = len(longest_ORF(new_sequence))
+        if(leng > max_length):
+            max_length = leng
+
+    # maximum = max(lengths)
+    print(max_length)
+    return max_length
 
 
 def coding_strand_to_AA(dna):
@@ -148,8 +224,21 @@ def coding_strand_to_AA(dna):
         >>> coding_strand_to_AA("ATGCCCGCTTT")
         'MPA'
     """
-    # TODO: implement this
-    pass
+    n = 3
+    codons = []
+    acids = ''
+
+    for i in range(0, len(dna), n):
+        codons.append(dna[i:i+n])
+
+    if len(codons[-1]) < 3:
+        codons.pop(-1)
+
+    for c in codons:
+        amino = aa_table[c]
+        acids += ''.join(amino)
+
+    return acids
 
 
 def gene_finder(dna):
@@ -158,9 +247,22 @@ def gene_finder(dna):
         dna: a DNA sequence
         returns: a list of all amino acid sequences coded by the sequence dna.
     """
-    # TODO: implement this
-    pass
+    threshold = longest_ORF_noncoding(dna, 400)
+    #change this to 1500 or so later
+    dna_orfs = find_all_ORFs_both_strands(dna)
+    amino_sequences = []
+    longs = []
+
+    for snip in dna_orfs:
+        if len(snip) > threshold:
+            amino_sequences.append(coding_strand_to_AA(snip))
+
+    print(amino_sequences)
+    #print(len(amino_sequences))
+    return amino_sequences
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
+    #doctest.run_docstring_examples(coding_strand_to_AA, globals(), verbose=True)
+    dna = load_seq("./data/X73525.fa")
+    gene_finder(dna)
