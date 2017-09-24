@@ -47,7 +47,7 @@ if __name__ == "__main__":
     metagenome = load_metagenome()
     #metagenome is of form [('some info', 'actual sequence')]
     #transform metagenome to proper form
-    
+
     #import doctest
     #doctest.run_docstring_examples(longest_common_substring, globals(), verbose=True)
     #longest = longest_common_substring(nitrogenase, metagenome)

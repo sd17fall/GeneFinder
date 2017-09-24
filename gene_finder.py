@@ -160,10 +160,16 @@ def find_all_ORFs_both_strands(dna):
     """
     return_list = []
 
-    return_list.append(''.join(find_all_ORFs(dna)))
-    return_list.append(''.join(find_all_ORFs(get_reverse_complement(dna))))
-    return return_list
+    all_orfs_one = find_all_ORFs(dna)
+    all_orfs_two = find_all_ORFs(get_reverse_complement(dna))
 
+    for o in all_orfs_one:
+        return_list.append(o)
+
+    for a in all_orfs_two:
+        return_list.append(a)
+    #print(return_list)
+    return return_list
 
 def longest_ORF(dna):
     """ Finds the longest ORF on both strands of the specified DNA and returns it
@@ -173,13 +179,16 @@ def longest_ORF(dna):
     """
     orfs = find_all_ORFs_both_strands(dna)
 
-    longest_size=len(max(orfs,key=len))
+    #longest_size=len(max(orfs,key=len))
+
+    longest_length = 0
 
     for o in orfs:
-        if(longest_size==len(o)):
-            longest = o
+        if len(o) > longest_length:
+            longest_seq = o
+            longest_length = len(o)
 
-    return longest
+    return longest_seq
 
 def longest_ORF_noncoding(dna, num_trials):
     """ Computes the maximum length of the longest ORF over num_trials shuffles
@@ -189,13 +198,16 @@ def longest_ORF_noncoding(dna, num_trials):
         num_trials: the number of random shuffles
         returns: the maximum length longest ORF """
     lengths = []
+    max_length = 0
     for rand in range(0, num_trials):
         new_sequence = shuffle_string(dna)
         leng = len(longest_ORF(new_sequence))
-        lengths.append(leng)
+        if(leng > max_length):
+            max_length = leng
 
-    maximum = max(lengths)
-    return maximum
+    # maximum = max(lengths)
+    print(max_length)
+    return max_length
 
 
 def coding_strand_to_AA(dna):
@@ -235,7 +247,7 @@ def gene_finder(dna):
         dna: a DNA sequence
         returns: a list of all amino acid sequences coded by the sequence dna.
     """
-    threshold = longest_ORF_noncoding(dna, 15)
+    threshold = longest_ORF_noncoding(dna, 400)
     #change this to 1500 or so later
     dna_orfs = find_all_ORFs_both_strands(dna)
     amino_sequences = []
@@ -243,12 +255,9 @@ def gene_finder(dna):
 
     for snip in dna_orfs:
         if len(snip) > threshold:
-            longs.append(snip)
+            amino_sequences.append(coding_strand_to_AA(snip))
 
-    for string in dna_orfs:
-        amino_sequences.append(coding_strand_to_AA(''.join(string)))
-
-    #print(amino_sequences)
+    print(amino_sequences)
     #print(len(amino_sequences))
     return amino_sequences
 
