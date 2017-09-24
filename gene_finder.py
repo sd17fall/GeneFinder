@@ -10,7 +10,6 @@ import random
 from amino_acids import aa, codons, aa_table   # you may find these useful
 from load import load_seq
 
-
 def shuffle_string(s):
     """Shuffles the characters in the input string
         NOTE: this is a helper function, you do not
@@ -236,23 +235,25 @@ def gene_finder(dna):
         dna: a DNA sequence
         returns: a list of all amino acid sequences coded by the sequence dna.
     """
-    # TODO: implement this
-
-    threshold = longest_ORF_noncoding(dna, 4)
+    threshold = longest_ORF_noncoding(dna, 15)
     #change this to 1500 or so later
     dna_orfs = find_all_ORFs_both_strands(dna)
+    amino_sequences = []
+    longs = []
 
     for snip in dna_orfs:
-        if len(snip) < threshold:
-            dna_orfs.remove(snip)
+        if len(snip) > threshold:
+            longs.append(snip)
+            print(snip)
 
-    amino_string = coding_strand_to_AA(''.join(dna_orfs))
-    print(amino_string)
-    return amino_string
+    for string in dna_orfs:
+        amino_sequences.append(coding_strand_to_AA(''.join(string)))
+        print('hey')
+    #print(amino_sequences)
+    return amino_sequences
 
 if __name__ == "__main__":
     import doctest
     #doctest.run_docstring_examples(coding_strand_to_AA, globals(), verbose=True)
     dna = load_seq("./data/X73525.fa")
-    #longest_ORF_noncoding(dna, 4)
     gene_finder(dna)
