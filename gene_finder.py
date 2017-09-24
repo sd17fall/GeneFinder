@@ -244,12 +244,12 @@ def gene_finder(dna):
     for snip in dna_orfs:
         if len(snip) > threshold:
             longs.append(snip)
-            print(snip)
 
     for string in dna_orfs:
         amino_sequences.append(coding_strand_to_AA(''.join(string)))
-        print('hey')
+
     #print(amino_sequences)
+    #print(len(amino_sequences))
     return amino_sequences
 
 if __name__ == "__main__":
