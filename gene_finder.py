@@ -287,17 +287,17 @@ def gene_finder(dna):
 
     return amino_acids
 
-genes = gene_finder(dna)
-
-#write to genes.txt file
-file_ = open('genes.txt', 'wb')
-dump(genes, file_)
-
-#read from genes.txt file
-file_ = open('genes.txt', 'rb+')
-print(load(file_))
-
 
 if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+    #import doctest
+    #doctest.testmod()
+
+    genes = gene_finder(dna)
+
+    #write to genes.txt file
+    file_ = open('genes.txt', 'wb')
+    dump(genes, file_)
+
+    #read from genes.txt file
+    file_ = open('genes.txt', 'rb+')
+    print(load(file_))
